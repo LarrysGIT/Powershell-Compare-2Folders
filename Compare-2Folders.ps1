@@ -8,7 +8,8 @@ function Compare-2Folders
         [switch]$File = $true,
         [switch]$UseLastModifiedDateInsteadOfHash,
         [switch]$OutputDifferenceOnly = $true,
-        [switch]$OutputFullName
+        [switch]$OutputFullName,
+        [switch]$Recurse
     )
 
     $f1 = Get-Item -Path $Path1.TrimEnd('\') -ErrorAction:SilentlyContinue
@@ -16,16 +17,16 @@ function Compare-2Folders
     {
         Throw "'$Path1' is not a folder"
     }
-    $s1_file = Get-ChildItem -Path $f1.FullName -File -Recurse
-    $s1_directory = Get-ChildItem -Path $f1.FullName -Directory -Recurse
+    $s1_file = Get-ChildItem -Path $f1.FullName -File -Recurse:$Recurse
+    $s1_directory = Get-ChildItem -Path $f1.FullName -Directory -Recurse:$Recurse
 
     $f2 = Get-Item -Path $Path2.TrimEnd('\') -ErrorAction:SilentlyContinue
     if(!$f2 -or $f2.Mode -notmatch '^d')
     {
         Throw "'$Path2' is not a folder"
     }
-    $s2_file = Get-ChildItem -Path $f2.FullName -File -Recurse
-    $s2_directory = Get-ChildItem -Path $f2.FullName -Directory -Recurse
+    $s2_file = Get-ChildItem -Path $f2.FullName -File -Recurse:$Recurse
+    $s2_directory = Get-ChildItem -Path $f2.FullName -Directory -Recurse:$Recurse
 
     $obj = New-Object PSObject -Property @{"#1" = $null; "#2" = $null; "State" = $null; "Type" = $null}
 
