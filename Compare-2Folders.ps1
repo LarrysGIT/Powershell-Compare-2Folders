@@ -37,19 +37,19 @@ function Compare-2Folders
         if($UseLastModifiedDateInsteadOfHash)
         {
             $s1_file | %{
-                $h1[$($_.FullName.Replace($_.DirectoryName, ""))] = $_.LastWriteTimeUtc.Ticks
+                $h1[$($_.FullName.Replace($f1, ""))] = $_.LastWriteTimeUtc.Ticks
             }
             $s2_file | %{
-                $h2[$($_.FullName.Replace($_.DirectoryName, ""))] = $_.LastWriteTimeUtc.Ticks
+                $h2[$($_.FullName.Replace($f2, ""))] = $_.LastWriteTimeUtc.Ticks
             }
         }
         else
         {
             $s1_file | %{
-                $h1[$($_.FullName.Replace($_.DirectoryName, ""))] = (Get-FileHash -Path $_.FullName).Hash
+                $h1[$($_.FullName.Replace($f1, ""))] = (Get-FileHash -Path $_.FullName).Hash
             }
             $s2_file | %{
-                $h2[$($_.FullName.Replace($_.DirectoryName, ""))] = (Get-FileHash -Path $_.FullName).Hash
+                $h2[$($_.FullName.Replace($f2, ""))] = (Get-FileHash -Path $_.FullName).Hash
             }
         }
 
@@ -61,8 +61,8 @@ function Compare-2Folders
                     if(!$OutputDifferenceOnly)
                     {
                         $NewObj = $obj.PSObject.Copy()
-                        $NewObj.'#1' = if($OutputFullName){"$($f1.FullName)$_"}else{$_}
-                        $NewObj.'#2' = if($OutputFullName){"$($f2.FullName)$_"}else{$_}
+                        $NewObj.'#1' = if($OutputFullName){Join-Path -Path $f1.FullName -ChildPath $_}else{$_}
+                        $NewObj.'#2' = if($OutputFullName){Join-Path -Path $f2.FullName -ChildPath $_}else{$_}
                         $NewObj.'State' = 'Identical'
                         $NewObj.'Type' = 'File'
                         $NewObj
@@ -71,8 +71,8 @@ function Compare-2Folders
                 else
                 {
                     $NewObj = $obj.PSObject.Copy()
-                    $NewObj.'#1' = if($OutputFullName){"$($f1.FullName)$_"}else{$_}
-                    $NewObj.'#2' = if($OutputFullName){"$($f2.FullName)$_"}else{$_}
+                    $NewObj.'#1' = if($OutputFullName){Join-Path -Path $f1.FullName -ChildPath $_}else{$_}
+                    $NewObj.'#2' = if($OutputFullName){Join-Path -Path $f2.FullName -ChildPath $_}else{$_}
                     $NewObj.'State' = 'Different'
                     $NewObj.'Type' = 'File'
                     $NewObj
@@ -81,7 +81,7 @@ function Compare-2Folders
             elseif($h1.ContainsKey($_) -and !$h2.ContainsKey($_)) # file exists on path1
             {
                 $NewObj = $obj.PSObject.Copy()
-                $NewObj.'#1' = if($OutputFullName){"$($f1.FullName)$_"}else{$_}
+                $NewObj.'#1' = if($OutputFullName){Join-Path -Path $f1.FullName -ChildPath $_}else{$_}
                 #$NewObj.'#2' = ""
                 $NewObj.'State' = '#1'
                 $NewObj.'Type' = 'File'
@@ -91,7 +91,7 @@ function Compare-2Folders
             {
                 $NewObj = $obj.PSObject.Copy()
                 #$NewObj.'#1' = ""
-                $NewObj.'#2' = if($OutputFullName){"$($f2.FullName)$_"}else{$_}
+                $NewObj.'#2' = if($OutputFullName){Join-Path -Path $f2.FullName -ChildPath $_}else{$_}
                 $NewObj.'State' = '#2'
                 $NewObj.'Type' = 'File'
                 $NewObj
@@ -115,8 +115,8 @@ function Compare-2Folders
                 if(!$OutputDifferenceOnly)
                 {
                     $NewObj = $obj.PSObject.Copy()
-                    $NewObj.'#1' = if($OutputFullName){"$($f1.FullName)$_"}else{$_}
-                    $NewObj.'#2' = if($OutputFullName){"$($f2.FullName)$_"}else{$_}
+                    $NewObj.'#1' = if($OutputFullName){Join-Path -Path $f1.FullName -ChildPath $_}else{$_}
+                    $NewObj.'#2' = if($OutputFullName){Join-Path -Path $f2.FullName -ChildPath $_}else{$_}
                     $NewObj.'State' = '#1 #2'
                     $NewObj.'Type' = 'Directory'
                     $NewObj
@@ -125,7 +125,7 @@ function Compare-2Folders
             elseif($h1.ContainsKey($_) -and !$h2.ContainsKey($_)) # directory exists on path1
             {
                 $NewObj = $obj.PSObject.Copy()
-                $NewObj.'#1' = if($OutputFullName){"$($f1.FullName)$_"}else{$_}
+                $NewObj.'#1' = if($OutputFullName){Join-Path -Path $f1.FullName -ChildPath $_}else{$_}
                 #$NewObj.'#2' = ""
                 $NewObj.'State' = '#1'
                 $NewObj.'Type' = 'Directory'
@@ -135,7 +135,7 @@ function Compare-2Folders
             {
                 $NewObj = $obj.PSObject.Copy()
                 #$NewObj.'#1' = ""
-                $NewObj.'#2' = if($OutputFullName){"$($f2.FullName)$_"}else{$_}
+                $NewObj.'#2' = if($OutputFullName){Join-Path -Path $f2.FullName -ChildPath $_}else{$_}
                 $NewObj.'State' = '#2'
                 $NewObj.'Type' = 'Directory'
                 $NewObj
