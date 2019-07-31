@@ -11,6 +11,7 @@ function Compare-2Folders
         [switch]$UseLastModifiedDateInsteadOfHash,
         [switch]$OutputDifferenceOnly = $true,
         [switch]$OutputFullName,
+        [string]$CopyDifferentFilesTo,
         [switch]$Recurse
     )
 
@@ -78,6 +79,15 @@ function Compare-2Folders
                     $NewObj.'State' = 'Different'
                     $NewObj.'Type' = 'File'
                     $NewObj
+                    if($CopyDifferentFilesTo)
+                    {
+                        if(!(Test-Path "$CopyDifferentFilesTo\diff" -PathType Container))
+                        {
+                            New-Item -Path "$CopyDifferentFilesTo\diff" -ItemType Directory -Force -ErrorAction:SilentlyContinue | Out-Null
+                        }
+                        Copy-Item -Path $NewObj.$Path1Name -Destination "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path1Name -Leaf)_$Path1Name"
+                        Copy-Item -Path $NewObj.$Path2Name -Destination "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path2Name -Leaf)_$Path2Name"
+                    }
                 }
             }
             elseif($h1.ContainsKey($_) -and !$h2.ContainsKey($_)) # file exists on path1
@@ -88,6 +98,14 @@ function Compare-2Folders
                 $NewObj.'State' = $Path1Name
                 $NewObj.'Type' = 'File'
                 $NewObj
+                if($CopyDifferentFilesTo)
+                {
+                    if(!(Test-Path "$CopyDifferentFilesTo\$Path1Name" -PathType Container))
+                    {
+                        New-Item -Path "$CopyDifferentFilesTo\$Path1Name" -ItemType Directory -Force -ErrorAction:SilentlyContinue | Out-Null
+                    }
+                    Copy-Item -Path $NewObj.$Path1Name -Destination "$CopyDifferentFilesTo\$Path1Name\$(Split-Path $NewObj.$Path1Name -Leaf)"
+                }
             }
             elseif(!$h1.ContainsKey($_) -and $h2.ContainsKey($_)) # file exists on path2
             {
@@ -97,6 +115,14 @@ function Compare-2Folders
                 $NewObj.'State' = $Path2Name
                 $NewObj.'Type' = 'File'
                 $NewObj
+                if($CopyDifferentFilesTo)
+                {
+                    if(!(Test-Path "$CopyDifferentFilesTo\$Path2Name" -PathType Container))
+                    {
+                        New-Item -Path "$CopyDifferentFilesTo\$Path2Name" -ItemType Directory -Force -ErrorAction:SilentlyContinue | Out-Null
+                    }
+                    Copy-Item -Path $NewObj.$Path2Name -Destination "$CopyDifferentFilesTo\$Path2Name\$(Split-Path $NewObj.$Path2Name -Leaf)"
+                }
             }
         }
     }

@@ -65,4 +65,11 @@ PS> Compare-2Folders -Path1 .\1 -Path2 .\2 -Path1Name "P1" -Path2Name "P2"
 P1      P2      Type State
 --      --      ---- -----
 1\2.ps1 2\2.ps1 File Different
+
+PS> Compare-2Folders -Path1 .\1\ -Path2 .\2\ -Path1Name 111 -Path2Name 222 -Recurse -CopyDifferentFilesTo .\copyfiles
+
+111     222       Type State
+---     ---       ---- -----
+1\2.ps1 2\2.ps1   File Different
+        2\3\4.ps1 File 222
 ```
