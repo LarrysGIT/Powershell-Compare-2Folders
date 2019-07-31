@@ -6,9 +6,9 @@
 
 `-Path2 C:\2`: Path to the 2nd folder
 
-`Path1Name 111`: Change the default header name of path1
+`-Path1Name 111`: Default `#1`, change the default header name of path1
 
-`Path2Name 222`: Change the default header name of path2
+`-Path2Name 222`: Default `#2`, change the default header name of path2
 
 `-Directory`: Default `$false`, compare subfolders by existence
 
@@ -22,7 +22,7 @@
 
 `-Recurse`: Default `$true`, recurse child items
 
-`CopyDifferentFilesTo`: Provide a directory path to copy different files
+`-CopyDifferentFilesTo`: Default `null`, provide a directory path to copy different files
 
 ### Samples
 
