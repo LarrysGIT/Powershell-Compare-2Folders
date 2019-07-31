@@ -20,7 +20,7 @@
 
 ### Samples
 
-```
+```powershell
 PS> . .\Compare-2Folders.ps1
 PS> # Compare files in 2 folders
 PS> Compare-2Folders -Path1 .\1 -Path2 .\2
@@ -60,6 +60,9 @@ PS> Compare-2Folders -Path1 .\1 -Path2 .\2 -Recurse
 \2.ps1 \2.ps1 File Different
        \4.ps1 File #2
 
-```
+PS> Compare-2Folders -Path1 .\1 -Path2 .\2 -Path1Name "P1" -Path2Name "P2"
 
--- Larry.Song@outlook.com
+P1      P2      Type State
+--      --      ---- -----
+1\2.ps1 2\2.ps1 File Different
+```

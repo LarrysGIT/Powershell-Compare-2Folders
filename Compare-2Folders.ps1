@@ -4,6 +4,8 @@ function Compare-2Folders
     PARAM(
         [string]$Path1,
         [string]$Path2,
+        [string]$Path1Name = "#1",
+        [string]$Path2Name = "#2",
         [switch]$Directory,
         [switch]$File = $true,
         [switch]$UseLastModifiedDateInsteadOfHash,
@@ -28,7 +30,7 @@ function Compare-2Folders
     $s2_file = Get-ChildItem -Path $f2.FullName -File -Recurse:$Recurse
     $s2_directory = Get-ChildItem -Path $f2.FullName -Directory -Recurse:$Recurse
 
-    $obj = New-Object PSObject -Property @{"#1" = $null; "#2" = $null; "State" = $null; "Type" = $null}
+    $obj = New-Object PSObject -Property @{"$Path1Name" = $null; "$Path2Name" = $null; "State" = $null; "Type" = $null}
 
     if($File)
     {
@@ -61,8 +63,8 @@ function Compare-2Folders
                     if(!$OutputDifferenceOnly)
                     {
                         $NewObj = $obj.PSObject.Copy()
-                        $NewObj.'#1' = if($OutputFullName){Join-Path -Path $f1.FullName -ChildPath $_}else{Join-Path -Path $f1.Name -ChildPath $_}
-                        $NewObj.'#2' = if($OutputFullName){Join-Path -Path $f2.FullName -ChildPath $_}else{Join-Path -Path $f2.Name -ChildPath $_}
+                        $NewObj.$Path1Name = if($OutputFullName){Join-Path -Path $f1.FullName -ChildPath $_}else{Join-Path -Path $f1.Name -ChildPath $_}
+                        $NewObj.$Path2Name = if($OutputFullName){Join-Path -Path $f2.FullName -ChildPath $_}else{Join-Path -Path $f2.Name -ChildPath $_}
                         $NewObj.'State' = 'Identical'
                         $NewObj.'Type' = 'File'
                         $NewObj
@@ -71,8 +73,8 @@ function Compare-2Folders
                 else
                 {
                     $NewObj = $obj.PSObject.Copy()
-                    $NewObj.'#1' = if($OutputFullName){Join-Path -Path $f1.FullName -ChildPath $_}else{Join-Path -Path $f1.Name -ChildPath $_}
-                    $NewObj.'#2' = if($OutputFullName){Join-Path -Path $f2.FullName -ChildPath $_}else{Join-Path -Path $f2.Name -ChildPath $_}
+                    $NewObj.$Path1Name = if($OutputFullName){Join-Path -Path $f1.FullName -ChildPath $_}else{Join-Path -Path $f1.Name -ChildPath $_}
+                    $NewObj.$Path2Name = if($OutputFullName){Join-Path -Path $f2.FullName -ChildPath $_}else{Join-Path -Path $f2.Name -ChildPath $_}
                     $NewObj.'State' = 'Different'
                     $NewObj.'Type' = 'File'
                     $NewObj
@@ -81,18 +83,18 @@ function Compare-2Folders
             elseif($h1.ContainsKey($_) -and !$h2.ContainsKey($_)) # file exists on path1
             {
                 $NewObj = $obj.PSObject.Copy()
-                $NewObj.'#1' = if($OutputFullName){Join-Path -Path $f1.FullName -ChildPath $_}else{Join-Path -Path $f1.Name -ChildPath $_}
-                #$NewObj.'#2' = ""
-                $NewObj.'State' = '#1'
+                $NewObj.$Path1Name = if($OutputFullName){Join-Path -Path $f1.FullName -ChildPath $_}else{Join-Path -Path $f1.Name -ChildPath $_}
+                #$NewObj.$Path2Name = ""
+                $NewObj.'State' = $Path1Name
                 $NewObj.'Type' = 'File'
                 $NewObj
             }
             elseif(!$h1.ContainsKey($_) -and $h2.ContainsKey($_)) # file exists on path2
             {
                 $NewObj = $obj.PSObject.Copy()
-                #$NewObj.'#1' = ""
-                $NewObj.'#2' = if($OutputFullName){Join-Path -Path $f2.FullName -ChildPath $_}else{Join-Path -Path $f2.Name -ChildPath $_}
-                $NewObj.'State' = '#2'
+                #$NewObj.$Path1Name = ""
+                $NewObj.$Path2Name = if($OutputFullName){Join-Path -Path $f2.FullName -ChildPath $_}else{Join-Path -Path $f2.Name -ChildPath $_}
+                $NewObj.'State' = $Path2Name
                 $NewObj.'Type' = 'File'
                 $NewObj
             }
@@ -115,9 +117,9 @@ function Compare-2Folders
                 if(!$OutputDifferenceOnly)
                 {
                     $NewObj = $obj.PSObject.Copy()
-                    $NewObj.'#1' = if($OutputFullName){Join-Path -Path $f1.FullName -ChildPath $_}else{Join-Path -Path $f1.Name -ChildPath $_}
-                    $NewObj.'#2' = if($OutputFullName){Join-Path -Path $f2.FullName -ChildPath $_}else{Join-Path -Path $f2.Name -ChildPath $_}
-                    $NewObj.'State' = '#1 #2'
+                    $NewObj.$Path1Name = if($OutputFullName){Join-Path -Path $f1.FullName -ChildPath $_}else{Join-Path -Path $f1.Name -ChildPath $_}
+                    $NewObj.$Path2Name = if($OutputFullName){Join-Path -Path $f2.FullName -ChildPath $_}else{Join-Path -Path $f2.Name -ChildPath $_}
+                    $NewObj.'State' = "$Path1Name $Path2Name"
                     $NewObj.'Type' = 'Directory'
                     $NewObj
                 }
@@ -125,18 +127,18 @@ function Compare-2Folders
             elseif($h1.ContainsKey($_) -and !$h2.ContainsKey($_)) # directory exists on path1
             {
                 $NewObj = $obj.PSObject.Copy()
-                $NewObj.'#1' = if($OutputFullName){Join-Path -Path $f1.FullName -ChildPath $_}else{Join-Path -Path $f1.Name -ChildPath $_}
-                #$NewObj.'#2' = ""
-                $NewObj.'State' = '#1'
+                $NewObj.$Path1Name = if($OutputFullName){Join-Path -Path $f1.FullName -ChildPath $_}else{Join-Path -Path $f1.Name -ChildPath $_}
+                #$NewObj.$Path2Name = ""
+                $NewObj.'State' = $Path1Name
                 $NewObj.'Type' = 'Directory'
                 $NewObj
             }
             elseif(!$h1.ContainsKey($_) -and $h2.ContainsKey($_)) # directory exists on path2
             {
                 $NewObj = $obj.PSObject.Copy()
-                #$NewObj.'#1' = ""
-                $NewObj.'#2' = if($OutputFullName){Join-Path -Path $f2.FullName -ChildPath $_}else{Join-Path -Path $f2.Name -ChildPath $_}
-                $NewObj.'State' = '#2'
+                #$NewObj.$Path1Name = ""
+                $NewObj.$Path2Name = if($OutputFullName){Join-Path -Path $f2.FullName -ChildPath $_}else{Join-Path -Path $f2.Name -ChildPath $_}
+                $NewObj.'State' = $Path2Name
                 $NewObj.'Type' = 'Directory'
                 $NewObj
             }
