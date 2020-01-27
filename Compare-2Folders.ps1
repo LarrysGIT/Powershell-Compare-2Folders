@@ -30,7 +30,7 @@ function Compare-2Folders
     $s2_file = Get-ChildItem -Path $f2.FullName -File -Recurse:$Recurse
     $s2_directory = Get-ChildItem -Path $f2.FullName -Directory -Recurse:$Recurse
 
-    $obj = New-Object PSObject -Property @{"$Path1Name" = $null; "$Path2Name" = $null; "State" = $null; "Type" = $null}
+    $obj = New-Object PSObject -Property @{"$Path1Name" = $null; "Path1FullName" = $null; "$Path2Name" = $null; "Path2FullName" = $null; "State" = $null; "Type" = $null}
 
     if($File)
     {
@@ -63,8 +63,8 @@ function Compare-2Folders
                     if(!$OutputDifferenceOnly)
                     {
                         $NewObj = $obj.PSObject.Copy()
-                        $NewObj.$Path1FullName = Join-Path -Path $f1.FullName -ChildPath $_
-                        $NewObj.$Path2FullName = Join-Path -Path $f2.FullName -ChildPath $_
+                        $NewObj.Path1FullName = Join-Path -Path $f1.FullName -ChildPath $_
+                        $NewObj.Path2FullName = Join-Path -Path $f2.FullName -ChildPath $_
                         $NewObj.$Path1Name = Join-Path -Path $f1.Name -ChildPath $_
                         $NewObj.$Path2Name = Join-Path -Path $f2.Name -ChildPath $_
                         $NewObj.'State' = 'Identical'
@@ -75,8 +75,8 @@ function Compare-2Folders
                 else
                 {
                     $NewObj = $obj.PSObject.Copy()
-                    $NewObj.$Path1FullName = Join-Path -Path $f1.FullName -ChildPath $_
-                    $NewObj.$Path2FullName = Join-Path -Path $f2.FullName -ChildPath $_
+                    $NewObj.Path1FullName = Join-Path -Path $f1.FullName -ChildPath $_
+                    $NewObj.Path2FullName = Join-Path -Path $f2.FullName -ChildPath $_
                     $NewObj.$Path1Name = Join-Path -Path $f1.Name -ChildPath $_
                     $NewObj.$Path2Name = Join-Path -Path $f2.Name -ChildPath $_
                     $NewObj.'State' = 'Different'
@@ -88,15 +88,15 @@ function Compare-2Folders
                         {
                             New-Item -Path "$CopyDifferentFilesTo\diff" -ItemType Directory -Force -ErrorAction:SilentlyContinue | Out-Null
                         }
-                        Copy-Item -Path $NewObj.$Path1FullName -Destination "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path1Name -Leaf)_$Path1Name"
-                        Copy-Item -Path $NewObj.$Path2FullName -Destination "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path2Name -Leaf)_$Path2Name"
+                        Copy-Item -Path $NewObj.Path1FullName -Destination "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path1Name -Leaf)_$Path1Name"
+                        Copy-Item -Path $NewObj.Path2FullName -Destination "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path2Name -Leaf)_$Path2Name"
                     }
                 }
             }
             elseif($h1.ContainsKey($_) -and !$h2.ContainsKey($_)) # file exists on path1
             {
                 $NewObj = $obj.PSObject.Copy()
-                $NewObj.$Path1FullName = Join-Path -Path $f1.FullName -ChildPath $_
+                $NewObj.Path1FullName = Join-Path -Path $f1.FullName -ChildPath $_
                 $NewObj.$Path1Name = Join-Path -Path $f1.Name -ChildPath $_
                 #$NewObj.$Path2Name = ""
                 $NewObj.'State' = $Path1Name
@@ -108,14 +108,14 @@ function Compare-2Folders
                     {
                         New-Item -Path "$CopyDifferentFilesTo\$Path1Name" -ItemType Directory -Force -ErrorAction:SilentlyContinue | Out-Null
                     }
-                    Copy-Item -Path $NewObj.$Path1FullName -Destination "$CopyDifferentFilesTo\$Path1Name\$(Split-Path $NewObj.$Path1Name -Leaf)"
+                    Copy-Item -Path $NewObj.Path1FullName -Destination "$CopyDifferentFilesTo\$Path1Name\$(Split-Path $NewObj.$Path1Name -Leaf)"
                 }
             }
             elseif(!$h1.ContainsKey($_) -and $h2.ContainsKey($_)) # file exists on path2
             {
                 $NewObj = $obj.PSObject.Copy()
                 #$NewObj.$Path1Name = ""
-                $NewObj.$Path2FullName = Join-Path -Path $f2.FullName -ChildPath $_
+                $NewObj.Path2FullName = Join-Path -Path $f2.FullName -ChildPath $_
                 $NewObj.$Path2Name = Join-Path -Path $f2.Name -ChildPath $_
                 $NewObj.'State' = $Path2Name
                 $NewObj.'Type' = 'File'
@@ -126,7 +126,7 @@ function Compare-2Folders
                     {
                         New-Item -Path "$CopyDifferentFilesTo\$Path2Name" -ItemType Directory -Force -ErrorAction:SilentlyContinue | Out-Null
                     }
-                    Copy-Item -Path $NewObj.$Path2FullName -Destination "$CopyDifferentFilesTo\$Path2Name\$(Split-Path $NewObj.$Path2Name -Leaf)"
+                    Copy-Item -Path $NewObj.Path2FullName -Destination "$CopyDifferentFilesTo\$Path2Name\$(Split-Path $NewObj.$Path2Name -Leaf)"
                 }
             }
         }
@@ -148,8 +148,8 @@ function Compare-2Folders
                 if(!$OutputDifferenceOnly)
                 {
                     $NewObj = $obj.PSObject.Copy()
-                    $NewObj.$Path1FullName = Join-Path -Path $f1.FullName -ChildPath $_
-                    $NewObj.$Path2FullName = Join-Path -Path $f2.FullName -ChildPath $_
+                    $NewObj.Path1FullName = Join-Path -Path $f1.FullName -ChildPath $_
+                    $NewObj.Path2FullName = Join-Path -Path $f2.FullName -ChildPath $_
                     $NewObj.$Path1Name = Join-Path -Path $f1.Name -ChildPath $_
                     $NewObj.$Path2Name = Join-Path -Path $f2.Name -ChildPath $_
                     $NewObj.'State' = "$Path1Name $Path2Name"
@@ -160,7 +160,7 @@ function Compare-2Folders
             elseif($h1.ContainsKey($_) -and !$h2.ContainsKey($_)) # directory exists on path1
             {
                 $NewObj = $obj.PSObject.Copy()
-                $NewObj.$Path1FullName = Join-Path -Path $f1.FullName -ChildPath $_
+                $NewObj.Path1FullName = Join-Path -Path $f1.FullName -ChildPath $_
                 $NewObj.$Path1Name = Join-Path -Path $f1.Name -ChildPath $_
                 #$NewObj.$Path2Name = ""
                 $NewObj.'State' = $Path1Name
@@ -171,7 +171,7 @@ function Compare-2Folders
             {
                 $NewObj = $obj.PSObject.Copy()
                 #$NewObj.$Path1Name = ""
-                $NewObj.$Path2FullName = Join-Path -Path $f2.FullName -ChildPath $_
+                $NewObj.Path2FullName = Join-Path -Path $f2.FullName -ChildPath $_
                 $NewObj.$Path2Name = Join-Path -Path $f2.Name -ChildPath $_
                 $NewObj.'State' = $Path2Name
                 $NewObj.'Type' = 'Directory'
