@@ -18,8 +18,6 @@
 
 `-OutputDifferenceOnly`: Default `$true`, output only differences
 
-`-OutputFullName`: Default `$false`, output full path instead of relative path
-
 `-Recurse`: Default `$true`, recurse child items
 
 `-CopyDifferentFilesTo`: Default `null`, provide a directory path to copy different files
