@@ -88,8 +88,28 @@ function Compare-2Folders
                         {
                             New-Item -Path "$CopyDifferentFilesTo\diff" -ItemType Directory -Force -ErrorAction:SilentlyContinue | Out-Null
                         }
-                        Copy-Item -Path $NewObj.Path1FullName -Destination "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path1Name -Leaf)_$Path1Name"
-                        Copy-Item -Path $NewObj.Path2FullName -Destination "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path2Name -Leaf)_$Path2Name"
+                        $i = 1
+                        while($true)
+                        {
+                            $CopyTo_1 = "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path1Name -Leaf)_SameNameConflict$('{0:D2}' -f $i)_$Path1Name"
+                            $CopyTo_2 = "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path2Name -Leaf)_SameNameConflict$('{0:D2}' -f $i)_$Path2Name"
+                            if($i -eq 1)
+                            {
+                                $CopyTo_1 = "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path1Name -Leaf)_$Path1Name"
+                                $CopyTo_2 = "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path2Name -Leaf)_$Path2Name"
+                            }
+                            $i++
+                            if((Test-Path -Path $CopyTo_1) -or (Test-Path -Path $CopyTo_2))
+                            {
+                                continue
+                            }
+                            else
+                            {
+                                break
+                            }
+                        }
+                        Copy-Item -Path $NewObj.Path1FullName -Destination $CopyTo_1
+                        Copy-Item -Path $NewObj.Path2FullName -Destination $CopyTo_2
                     }
                 }
             }
@@ -108,7 +128,25 @@ function Compare-2Folders
                     {
                         New-Item -Path "$CopyDifferentFilesTo\$Path1Name" -ItemType Directory -Force -ErrorAction:SilentlyContinue | Out-Null
                     }
-                    Copy-Item -Path $NewObj.Path1FullName -Destination "$CopyDifferentFilesTo\$Path1Name\$(Split-Path $NewObj.$Path1Name -Leaf)"
+                    $i = 1
+                    while($true)
+                    {
+                        $CopyTo_1 = "$CopyDifferentFilesTo\$Path1Name\$(Split-Path $NewObj.$Path1Name -Leaf)_SameNameConflict$('{0:D2}' -f $i)"
+                        if($i -eq 1)
+                        {
+                            $CopyTo_1 = "$CopyDifferentFilesTo\$Path1Name\$(Split-Path $NewObj.$Path1Name -Leaf)"
+                        }
+                        $i++
+                        if(Test-Path -Path $CopyTo_1)
+                        {
+                            continue
+                        }
+                        else
+                        {
+                            break
+                        }
+                    }
+                    Copy-Item -Path $NewObj.Path1FullName -Destination $CopyTo_1
                 }
             }
             elseif(!$h1.ContainsKey($_) -and $h2.ContainsKey($_)) # file exists on path2
@@ -126,7 +164,25 @@ function Compare-2Folders
                     {
                         New-Item -Path "$CopyDifferentFilesTo\$Path2Name" -ItemType Directory -Force -ErrorAction:SilentlyContinue | Out-Null
                     }
-                    Copy-Item -Path $NewObj.Path2FullName -Destination "$CopyDifferentFilesTo\$Path2Name\$(Split-Path $NewObj.$Path2Name -Leaf)"
+                    $i = 1
+                    while($true)
+                    {
+                        $CopyTo_2 = "$CopyDifferentFilesTo\$Path2Name\$(Split-Path $NewObj.$Path2Name -Leaf)_SameNameConflict$('{0:D2}' -f $i)"
+                        if($i -eq 1)
+                        {
+                            $CopyTo_2 = "$CopyDifferentFilesTo\$Path2Name\$(Split-Path $NewObj.$Path2Name -Leaf)"
+                        }
+                        $i++
+                        if(Test-Path -Path $CopyTo_2)
+                        {
+                            continue
+                        }
+                        else
+                        {
+                            break
+                        }
+                    }
+                    Copy-Item -Path $NewObj.Path2FullName -Destination $CopyTo_2
                 }
             }
         }
