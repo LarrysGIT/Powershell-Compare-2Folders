@@ -1,4 +1,3 @@
-
 function Compare-2Folders
 {
     PARAM(
@@ -11,6 +10,7 @@ function Compare-2Folders
         [switch]$UseLastModifiedDateInsteadOfHash,
         [switch]$OutputDifferenceOnly = $true,
         [string]$CopyDifferentFilesTo,
+        [ValidateSet('MaintainPathNameForConflictsOnly', 'MaintainPathNameForAll','AppendNumber')][string]$CopyDifferentFilesTo_CopyMode,
         [switch]$Recurse
     )
 
@@ -91,12 +91,28 @@ function Compare-2Folders
                         $i = 1
                         while($true)
                         {
-                            $CopyTo_1 = "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path1Name -Leaf)_SameNameConflict$('{0:D2}' -f $i)_$Path1Name"
-                            $CopyTo_2 = "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path2Name -Leaf)_SameNameConflict$('{0:D2}' -f $i)_$Path2Name"
+                            if($CopyDifferentFilesTo_CopyMode -in @("MaintainPathNameForConflictsOnly", "MaintainPathNameForAll"))
+                            {
+                                $CopyTo_1 = "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path1Name -Leaf)_$((Split-Path $NewObj.$Path1Name).Replace("\", "~"))_$Path1Name"
+                                $CopyTo_2 = "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path2Name -Leaf)_$((Split-Path $NewObj.$Path2Name).Replace("\", "~"))_$Path2Name"
+                            }
+                            else
+                            {
+                                $CopyTo_1 = "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path1Name -Leaf)_SameNameConflict$('{0:D2}' -f $i)_$Path1Name"
+                                $CopyTo_2 = "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path2Name -Leaf)_SameNameConflict$('{0:D2}' -f $i)_$Path2Name"
+                            }
                             if($i -eq 1)
                             {
-                                $CopyTo_1 = "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path1Name -Leaf)_$Path1Name"
-                                $CopyTo_2 = "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path2Name -Leaf)_$Path2Name"
+                                if($CopyDifferentFilesTo_CopyMode -in @("MaintainPathNameForAll"))
+                                {
+                                    $CopyTo_1 = "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path1Name -Leaf)_$((Split-Path $NewObj.$Path1Name).Replace("\", "~"))_$Path1Name"
+                                    $CopyTo_2 = "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path2Name -Leaf)_$((Split-Path $NewObj.$Path2Name).Replace("\", "~"))_$Path2Name"
+                                }
+                                else
+                                {
+                                    $CopyTo_1 = "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path1Name -Leaf)_$Path1Name"
+                                    $CopyTo_2 = "$CopyDifferentFilesTo\diff\$(Split-Path $NewObj.$Path2Name -Leaf)_$Path2Name"
+                                }
                             }
                             $i++
                             if((Test-Path -Path $CopyTo_1) -or (Test-Path -Path $CopyTo_2))
@@ -131,10 +147,24 @@ function Compare-2Folders
                     $i = 1
                     while($true)
                     {
-                        $CopyTo_1 = "$CopyDifferentFilesTo\$Path1Name\$(Split-Path $NewObj.$Path1Name -Leaf)_SameNameConflict$('{0:D2}' -f $i)"
+                        if($CopyDifferentFilesTo_CopyMode -in @("MaintainPathNameForConflictsOnly", "MaintainPathNameForAll"))
+                        {
+                            $CopyTo_1 = "$CopyDifferentFilesTo\$Path1Name\$(Split-Path $NewObj.$Path1Name -Leaf)_$((Split-Path $NewObj.$Path1Name).Replace("\", "~"))_$Path1Name"
+                        }
+                        else
+                        {
+                            $CopyTo_1 = "$CopyDifferentFilesTo\$Path1Name\$(Split-Path $NewObj.$Path1Name -Leaf)_SameNameConflict$('{0:D2}' -f $i)"
+                        }
                         if($i -eq 1)
                         {
-                            $CopyTo_1 = "$CopyDifferentFilesTo\$Path1Name\$(Split-Path $NewObj.$Path1Name -Leaf)"
+                            if($CopyDifferentFilesTo_CopyMode -in @("MaintainPathNameForAll"))
+                            {
+                                $CopyTo_1 = "$CopyDifferentFilesTo\$Path1Name\$(Split-Path $NewObj.$Path1Name -Leaf)_$((Split-Path $NewObj.$Path1Name).Replace("\", "~"))_$Path1Name"
+                            }
+                            else
+                            {
+                                $CopyTo_1 = "$CopyDifferentFilesTo\$Path1Name\$(Split-Path $NewObj.$Path1Name -Leaf)"
+                            }
                         }
                         $i++
                         if(Test-Path -Path $CopyTo_1)
@@ -167,10 +197,24 @@ function Compare-2Folders
                     $i = 1
                     while($true)
                     {
-                        $CopyTo_2 = "$CopyDifferentFilesTo\$Path2Name\$(Split-Path $NewObj.$Path2Name -Leaf)_SameNameConflict$('{0:D2}' -f $i)"
+                        if($CopyDifferentFilesTo_CopyMode -in @("MaintainPathNameForConflictsOnly", "MaintainPathNameForAll"))
+                        {
+                            $CopyTo_2 = "$CopyDifferentFilesTo\$Path2Name\$(Split-Path $NewObj.$Path2Name -Leaf)_$((Split-Path $NewObj.$Path2Name).Replace("\", "~"))_$Path2Name"
+                        }
+                        else
+                        {
+                            $CopyTo_2 = "$CopyDifferentFilesTo\$Path2Name\$(Split-Path $NewObj.$Path2Name -Leaf)_SameNameConflict$('{0:D2}' -f $i)"
+                        }
                         if($i -eq 1)
                         {
-                            $CopyTo_2 = "$CopyDifferentFilesTo\$Path2Name\$(Split-Path $NewObj.$Path2Name -Leaf)"
+                            if($CopyDifferentFilesTo_CopyMode -in @("MaintainPathNameForAll"))
+                            {
+                                $CopyTo_2 = "$CopyDifferentFilesTo\$Path2Name\$(Split-Path $NewObj.$Path2Name -Leaf)_$((Split-Path $NewObj.$Path2Name).Replace("\", "~"))_$Path2Name"
+                            }
+                            else
+                            {
+                                $CopyTo_2 = "$CopyDifferentFilesTo\$Path2Name\$(Split-Path $NewObj.$Path2Name -Leaf)"
+                            }
                         }
                         $i++
                         if(Test-Path -Path $CopyTo_2)

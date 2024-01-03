@@ -22,6 +22,8 @@
 
 `-CopyDifferentFilesTo`: Default `null`, provide a directory path to copy different files
 
+`-CopyDifferentFilesTo_CopyMode`: Default `AppendNumber`, when file names are conflict (same file name from different dirs), the action to take, `MaintainPathNameForConflictsOnly` maintain the dir name for conflict files, `MaintainPathNameForAll` maintain the dir name for all files, dir name `\` is replaced by `~`
+
 ### Samples
 
 ```powershell
